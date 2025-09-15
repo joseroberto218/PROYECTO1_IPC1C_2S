@@ -4,6 +4,11 @@ import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Scanner;
+import com.itextpdf.kernel.pdf.PdfDocument;
+import com.itextpdf.kernel.pdf.PdfWriter;
+import com.itextpdf.layout.Document;
+import com.itextpdf.layout.element.Paragraph;
+
 
 public class PROYECTO1_202200030 {
 
@@ -231,37 +236,69 @@ public class PROYECTO1_202200030 {
         }
     }
 
-    //Genera reportes en PDF del stock y ventas
-    static void generarReportes() {
-        //Crea un nombre único para los archivos 
-        String fechaArchivo = new SimpleDateFormat("dd_MM_yyyy_HH_mm_ss").format(new Date());
+   //Genera reportes en PDF del stock y ventas
+static void generarReportes() {
+    //Crea un nombre único para los archivos 
+    String fechaArchivo = new SimpleDateFormat("dd_MM_yyyy_HH_mm_ss").format(new Date());
 
-        //Genera reporte de stock
-        try (PrintWriter pw = new PrintWriter(new FileWriter(fechaArchivo + "_Stock.pdf"))) {
-            pw.println("REPORTE DE STOCK");
-            for (int i = 0; i < totalProductos; i++) {
-                pw.println(codigos[i] + " | " + nombres[i] + " | " + categorias[i] +
-                           " | Q." + precios[i] + " | Stock: " + cantidades[i]);
-            }
-        } catch (IOException e) {
-            System.out.println("Error generando reporte de stock.");
+    //Genera reporte de stock en PDF real
+    try {
+        String nombreArchivoStock = fechaArchivo + "_Stock.pdf";
+        PdfWriter writerStock = new PdfWriter(nombreArchivoStock);
+        PdfDocument pdfDocStock = new PdfDocument(writerStock);
+        Document documentStock = new Document(pdfDocStock);
+        
+        // Título del reporte
+        documentStock.add(new Paragraph("REPORTE DE STOCK").setBold().setFontSize(16));
+        documentStock.add(new Paragraph(" ")); // Línea en blanco
+        
+        // Agregar cada producto
+        for (int i = 0; i < totalProductos; i++) {
+            String lineaProducto = codigos[i] + " | " + nombres[i] + " | " + categorias[i] +
+                           " | Q." + precios[i] + " | Stock: " + cantidades[i];
+            documentStock.add(new Paragraph(lineaProducto));
         }
+        
+        documentStock.close();
+        System.out.println("Reporte de stock generado: " + nombreArchivoStock);
+        
+    } catch (Exception e) {
+        System.out.println("Error generando reporte de stock: " + e.getMessage());
+    }
 
-        //Genera reporte de ventas leyendo el archivo de ventas.txt
-        try (BufferedReader br = new BufferedReader(new FileReader("ventas.txt"));
-             PrintWriter pw = new PrintWriter(new FileWriter(fechaArchivo + "_Ventas.pdf"))) {
-            pw.println("REPORTE DE VENTAS");
+    //Genera reporte de ventas en PDF real
+    try {
+        String nombreArchivoVentas = fechaArchivo + "_Ventas.pdf";
+        PdfWriter writerVentas = new PdfWriter(nombreArchivoVentas);
+        PdfDocument pdfDocVentas = new PdfDocument(writerVentas);
+        Document documentVentas = new Document(pdfDocVentas);
+        
+        // Título del reporte
+        documentVentas.add(new Paragraph("REPORTE DE VENTAS").setBold().setFontSize(16));
+        documentVentas.add(new Paragraph(" ")); // Línea en blanco
+        
+        // Leer archivo de ventas y agregar cada línea
+        try (BufferedReader br = new BufferedReader(new FileReader("ventas.txt"))) {
             String linea;
             while ((linea = br.readLine()) != null) {
-                pw.println(linea);
+                if (!linea.trim().isEmpty()) { // Solo agregar líneas que no estén vacías
+                    documentVentas.add(new Paragraph(linea));
+                }
             }
-        } catch (IOException e) {
-            System.out.println("ERROR GENERADO AL REPORTE DE VENTAS");
+        } catch (FileNotFoundException e) {
+            documentVentas.add(new Paragraph("No hay ventas registradas"));
         }
-
-        System.out.println("REPORTES GENERADO :D");
-        registrarBitacora("Generar Reportes", "Correcto");
+        
+        documentVentas.close();
+        System.out.println("Reporte de ventas generado: " + nombreArchivoVentas);
+        
+    } catch (Exception e) {
+        System.out.println("Error generando reporte de ventas: " + e.getMessage());
     }
+
+    System.out.println("REPORTES GENERADOS :D");
+    registrarBitacora("Generar Reportes", "Correcto");
+}
 
     //Muesta los datos del Estudiante
     static void verDatosEstudiante() {
