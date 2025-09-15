@@ -246,20 +246,19 @@ static void generarReportes() {
         String nombreArchivoStock = fechaArchivo + "_Stock.pdf";
         PdfWriter writerStock = new PdfWriter(nombreArchivoStock);
         PdfDocument pdfDocStock = new PdfDocument(writerStock);
-        Document documentStock = new Document(pdfDocStock);
-        
         // Título del reporte
-        documentStock.add(new Paragraph("REPORTE DE STOCK").setBold().setFontSize(16));
-        documentStock.add(new Paragraph(" ")); // Línea en blanco
-        
-        // Agregar cada producto
-        for (int i = 0; i < totalProductos; i++) {
-            String lineaProducto = codigos[i] + " | " + nombres[i] + " | " + categorias[i] +
-                           " | Q." + precios[i] + " | Stock: " + cantidades[i];
-            documentStock.add(new Paragraph(lineaProducto));
+        try (Document documentStock = new Document(pdfDocStock)) {
+            // Título del reporte
+            documentStock.add(new Paragraph("REPORTE DE STOCK").setBold().setFontSize(16));
+            documentStock.add(new Paragraph(" ")); // Línea en blanco
+            
+            // Agregar cada producto
+            for (int i = 0; i < totalProductos; i++) {
+                String lineaProducto = codigos[i] + " | " + nombres[i] + " | " + categorias[i] +
+                        " | Q." + precios[i] + " | Stock: " + cantidades[i];
+                documentStock.add(new Paragraph(lineaProducto));
+            }
         }
-        
-        documentStock.close();
         System.out.println("Reporte de stock generado: " + nombreArchivoStock);
         
     } catch (Exception e) {
