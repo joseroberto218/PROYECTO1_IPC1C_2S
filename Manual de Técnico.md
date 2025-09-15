@@ -70,7 +70,7 @@ El sistema implementa un patrón de menú con switch-case y utiliza métodos est
 - **Persistencia:** Escribe transacción en archivo `ventas.txt` con formato separado por pipe (|)
 - **Efecto:** Reduce `cantidades[i]` por la cantidad vendida
 
-### `generarReportes()` - **ACTUALIZADO**
+### `generarReportes()`
 - **Propósito:** Genera reportes en formato PDF de stock actual y historial de ventas con validaciones previas
 - **Tecnología:** Utiliza iText 5.5.13 para generación de PDFs
 - **Validaciones implementadas:**
